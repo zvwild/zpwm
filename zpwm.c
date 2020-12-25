@@ -37,6 +37,14 @@ void string_node_free_self_and_following(struct string_node *node) {
         }
 }
 
+void dump_list(struct string_node *list)
+{
+        while (list) {
+                fprintf(stderr, "%s (%zu)\n", list->value, list->len);
+                list = list->next;
+        }
+}
+
 void print_unknown_command(void)
 {
 
@@ -92,13 +100,15 @@ int main(int argc, const char *argv[])
 
                 char *start = NULL;
                 char previous = '\0';
+
+                bool multi_word = false;
+
                 while (true) {
                         char current = *current_ptr;
 
-                        if (current == '\0')
+                        if (current == '\0') {
                                 break;
-
-                        if ((current == ' ' || current == '\n') && start != NULL) {
+                        } else if ((((multi_word && current == '"') || (!multi_word && current == ' ') || current == '\n')) && start != NULL) {
                                 if (current_ptr != command_line && previous != ' ') {
                                         char *end = current_ptr;
 
@@ -122,10 +132,11 @@ int main(int argc, const char *argv[])
                                         list_len += 1;
                                         start = NULL;
                                 }
-                        }
-
-                        if (current != ' ' && start == NULL)
+                        } else if (current == '"') {
+                                multi_word = true;
+                        } else if (current != ' ' && start == NULL) {
                                 start = current_ptr;
+                        }
 
                         current_ptr += 1;
                         previous = current;
