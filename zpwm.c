@@ -37,6 +37,12 @@ void string_node_free_self_and_following(struct string_node *node) {
         }
 }
 
+void print_unknown_command(void)
+{
+
+        fprintf(stderr, "Unkown command. Try \"help\".\n");
+}
+
 int main(int argc, const char *argv[])
 {
         if (argc < 2) {
@@ -125,8 +131,16 @@ int main(int argc, const char *argv[])
                         previous = current;
                 }
 
-                if (list_start != NULL)
+                if (list_start != NULL) {
+                        if (strcmp("help", list_start->value) == 0)
+                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get name\n\t- set service entry1 entry2 entry3\n");
+                        else
+                                print_unknown_command();
+
                         string_node_free_self_and_following(list_start);
+                } else {
+                        print_unknown_command();
+                }
         }
 
         zip_close(archive);
