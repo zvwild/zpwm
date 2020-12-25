@@ -22,8 +22,6 @@ int main(int argc, const char *argv[])
                 return ERROR_CANNOT_ACCESS_INPUT_FILE;
         }
 
-        fprintf(stderr, "Please enter your password: ");
-
         const unsigned long long BUFFER_SIZE = MAX_PASSWORD_LENGTH + 1;
         char *password = (char*)malloc(BUFFER_SIZE);
 
@@ -32,6 +30,7 @@ int main(int argc, const char *argv[])
                 return ERROR_CANNOT_ALLOCATE_PASSWORD_BUFFER;
         }
 
+        fprintf(stderr, "Please enter your password: ");
         scanf("%[^\n]", password);
 
         /* clear the password buffer */
