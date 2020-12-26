@@ -3,3 +3,7 @@ zpwm: zpwm.c
 
 install: zpwm
 	cp ./zpwm /usr/bin/zpwm
+
+clean:
+	rm ./zpwm
+
