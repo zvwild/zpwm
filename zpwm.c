@@ -207,6 +207,9 @@ int main(int argc, const char *argv[])
 
                                         fprintf(stderr, "Section %s updated.\n", section);
                                 }
+                        } else if (strcmp("exit", cmd) == 0) {
+                                fprintf(stderr, "Bye!\n");
+                                break;
                         } else {
                                 print_unknown_command();
                         }
