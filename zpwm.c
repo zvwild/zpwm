@@ -31,7 +31,6 @@ int main(int argc, const char *argv[])
                 return ERROR_NO_INPUT_FILE;
         }
 
-
         const char *file_name = argv[1];
         fprintf(stderr, "Operating on file: %s\n", file_name);
 
