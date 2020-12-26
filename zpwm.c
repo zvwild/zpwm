@@ -31,11 +31,16 @@ int main(int argc, const char *argv[])
                 return ERROR_NO_INPUT_FILE;
         }
 
+
         const char *file_name = argv[1];
         fprintf(stderr, "Operating on file: %s\n", file_name);
 
-        size_t password_buffer_size = MAX_PASSWORD_LENGTH + 1;
-        char *password = (char*)malloc(password_buffer_size);
+        size_t password_buffer_size;
+        char *password;
+
+prompt_password:
+        password_buffer_size = MAX_PASSWORD_LENGTH + 1;
+        password = (char*)malloc(password_buffer_size);
 
         if (!password) {
                 fprintf(stderr, "Failed to allocate %zu bytes for the password!\n", password_buffer_size);
@@ -45,6 +50,12 @@ int main(int argc, const char *argv[])
         fprintf(stderr, "Please enter your password: ");
         size_t characters_read = getline(&password, &password_buffer_size, stdin);
         password[characters_read - 1] = 0;
+
+        if (password[0] == '\0') {
+                fprintf(stderr, "Please provide a valid password!\n");
+                free(password);
+                goto prompt_password;
+        }
 
         int zip_error;
         zip_t *archive = zip_open(file_name, ZIP_CREATE, &zip_error);
