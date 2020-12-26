@@ -27,7 +27,8 @@ struct string_node *string_node_new(char *value, size_t len)
         return result;
 }
 
-void string_node_free_self_and_following(struct string_node *node) {
+void string_node_free_self_and_following(struct string_node *node)
+{
         while (node) {
                 struct string_node *current = node;
                 node = node->next;
