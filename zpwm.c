@@ -169,7 +169,7 @@ int main(int argc, const char *argv[])
                                                 zip_fread(zip_file, buffer, buffer_size);
                                                 buffer[buffer_size] = '\0';
 
-                                                fprintf(stderr, "Section %s:\t%s\n", section, buffer);
+                                                fprintf(stderr, "Section %s:\n\t%s\n", section, buffer);
 
                                                 free(buffer);
                                                 zip_fclose(zip_file);
