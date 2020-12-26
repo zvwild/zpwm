@@ -141,11 +141,43 @@ int main(int argc, const char *argv[])
                 }
 
                 if (list_start != NULL) {
-                        if (strcmp("help", list_start->value) == 0)
+                        char *cmd = list_start->value;
+                        if (strcmp("help", cmd) == 0) {
                                 fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get name\n\t- set service entry1 entry2 entry3\n");
-                        else
-                                print_unknown_command();
+                        } else if (strcmp("get", cmd) == 0) {
+                                if (list_len == 1) {
+                                        fprintf(stderr, "Please provide a section. Example: get github\n");
+                                } else {
+                                        char *section = list_start->next->value;
 
+                                        zip_file_t *zip_file = zip_fopen_encrypted(archive, section, ZIP_FL_UNCHANGED, password);
+                                        zip_error_t *error = zip_get_error(archive);
+
+                                        int zip_error_code = zip_error_code_zip(error);
+
+                                        if (zip_file == NULL) {
+                                                if (zip_error_code == 27)
+                                                        fprintf(stderr, "Wrong password!\n");
+                                                else
+                                                        fprintf(stderr, "Could not open file!\n");
+                                        } else {
+                                                zip_stat_t stat;
+                                                zip_stat_index(archive, zip_name_locate(archive, section, ZIP_FL_ENC_GUESS), ZIP_FL_ENC_GUESS, &stat);
+
+                                                size_t buffer_sizte = stat.size;
+                                                char *buffer = (char*)malloc(buffer_size + 1);
+                                                zip_fread(zip_file, buffer, buffer_size);
+                                                buffer[buffer_size] = '\0';
+
+                                                fprintf(stderr, "Section %s:\t%s\n", section, buffer);
+
+                                                free(buffer);
+                                                zip_fclose(zip_file);
+                                        }
+                                }
+                        } else {
+                                print_unknown_command();
+                        }
                         string_node_free_self_and_following(list_start);
                 } else {
                         print_unknown_command();
