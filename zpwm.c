@@ -210,6 +210,9 @@ int main(int argc, const char *argv[])
                         } else if (strcmp("exit", cmd) == 0 || strcmp("quit", cmd) == 0) {
                                 fprintf(stderr, "Bye!\n");
                                 break;
+                        } else if (strcmp("discard", cmd) == 0) {
+                                zip_unchange_all(archive);
+                                fprintf(stderr, "Discarded changes!\n");
                         } else {
                                 print_unknown_command();
                         }
