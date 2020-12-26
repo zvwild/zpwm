@@ -18,39 +18,11 @@ struct string_node {
         struct string_node *next;
 };
 
-struct string_node *string_node_new(char *value, size_t len)
-{
-        struct string_node *result = (struct string_node*)malloc(sizeof(*result));
-        result->value = value;
-        result->len = len;
-        result->next = NULL;
-        return result;
-}
+struct string_node *string_node_new(char *value, size_t len);
+void string_node_free_self_and_following(struct string_node *node);
 
-void string_node_free_self_and_following(struct string_node *node)
-{
-        while (node) {
-                struct string_node *current = node;
-                node = node->next;
-
-                free(current->value);
-                free(current);
-        }
-}
-
-void dump_list(struct string_node *list)
-{
-        while (list) {
-                fprintf(stderr, "%s (%zu)\n", list->value, list->len);
-                list = list->next;
-        }
-}
-
-void print_unknown_command(void)
-{
-
-        fprintf(stderr, "Unkown command. Try \"help\".\n");
-}
+void dump_list(struct string_node *list);
+void print_unknown_command(void);
 
 int main(int argc, const char *argv[])
 {
@@ -62,16 +34,16 @@ int main(int argc, const char *argv[])
         const char *file_name = argv[1];
         fprintf(stderr, "Operating on file: %s\n", file_name);
 
-        size_t buffer_size = MAX_PASSWORD_LENGTH + 1;
-        char *password = (char*)malloc(buffer_size);
+        size_t password_buffer_size = MAX_PASSWORD_LENGTH + 1;
+        char *password = (char*)malloc(password_buffer_size);
 
         if (!password) {
-                fprintf(stderr, "Failed to allocate %zu bytes for the password!\n", buffer_size);
+                fprintf(stderr, "Failed to allocate %zu bytes for the password!\n", password_buffer_size);
                 return ERROR_CANNOT_ALLOCATE_PASSWORD_BUFFER;
         }
 
         fprintf(stderr, "Please enter your password: ");
-        size_t characters_read = getline(&password, &buffer_size, stdin);
+        size_t characters_read = getline(&password, &password_buffer_size, stdin);
         password[characters_read - 1] = 0;
 
         int zip_error;
@@ -165,14 +137,14 @@ int main(int argc, const char *argv[])
                                                 zip_stat_t stat;
                                                 zip_stat_index(archive, zip_name_locate(archive, section, ZIP_FL_ENC_GUESS), ZIP_FL_ENC_GUESS, &stat);
 
-                                                size_t buffer_sizte = stat.size;
-                                                char *buffer = (char*)malloc(buffer_size + 1);
-                                                zip_fread(zip_file, buffer, buffer_size);
-                                                buffer[buffer_size] = '\0';
+                                                size_t file_buffer_size = stat.size;
+                                                char *file_buffer = (char*)malloc(file_buffer_size + 1);
+                                                zip_fread(zip_file, file_buffer, file_buffer_size);
+                                                file_buffer[file_buffer_size] = '\0';
 
-                                                fprintf(stderr, "Section %s:\n\t%s\n", section, buffer);
+                                                fprintf(stderr, "Section %s:\n\t%s\n", section, file_buffer);
 
-                                                free(buffer);
+                                                free(file_buffer);
                                                 zip_fclose(zip_file);
                                         }
                                 }
@@ -227,8 +199,41 @@ int main(int argc, const char *argv[])
 
 cleanup_password:
         /* clear the password buffer */
-        memset(password, 0, buffer_size);
+        memset(password, 0, password_buffer_size);
         free(password);
         return 0;
 }
 
+void print_unknown_command(void)
+{
+
+        fprintf(stderr, "Unkown command. Try \"help\".\n");
+}
+
+void dump_list(struct string_node *list)
+{
+        while (list) {
+                fprintf(stderr, "%s (%zu)\n", list->value, list->len);
+                list = list->next;
+        }
+}
+
+void string_node_free_self_and_following(struct string_node *node)
+{
+        while (node) {
+                struct string_node *current = node;
+                node = node->next;
+
+                free(current->value);
+                free(current);
+        }
+}
+
+struct string_node *string_node_new(char *value, size_t len)
+{
+        struct string_node *result = (struct string_node*)malloc(sizeof(*result));
+        result->value = value;
+        result->len = len;
+        result->next = NULL;
+        return result;
+}
