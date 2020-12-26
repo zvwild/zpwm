@@ -175,6 +175,38 @@ int main(int argc, const char *argv[])
                                                 zip_fclose(zip_file);
                                         }
                                 }
+                        } else if (strcmp("set", cmd) == 0) {
+                                if (list_len == 2) {
+                                        fprintf(stderr, "You need to provide at least a section and one entry. Example: set github awesomedude@awesomemail.com crazydev123\n");
+                                } else {
+                                        struct string_node *section_node = list_start->next;
+                                        char *section = section_node->value;
+
+                                        struct string_node *entry_node = section_node->next;
+
+                                        size_t current_len = entry_node->len;
+                                        char *entries_buffer = (char*)malloc(current_len);
+                                        memcpy(entries_buffer, entry_node->value, current_len);
+
+                                        entry_node = entry_node->next;
+                                        while (entry_node) {
+                                                entries_buffer = realloc(entries_buffer, current_len + entry_node->len + 1);
+                                                entries_buffer[current_len] = ' ';
+                                                memcpy(entries_buffer + current_len + 1, entry_node->value, entry_node->len);
+
+                                                current_len += entry_node->len + 1;
+                                                entry_node = entry_node->next;
+                                        }
+
+                                        entries_buffer = realloc(entries_buffer, current_len + 1);
+                                        entries_buffer[current_len] = '\0';
+
+                                        zip_source_t *src = zip_source_buffer(archive, entries_buffer, current_len, 0);
+                                        zip_int64_t index = zip_file_add(archive, section, src, ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
+                                        zip_file_set_encryption(archive, index, ZIP_EM_AES_256, password);
+
+                                        fprintf(stderr, "Section %s updated.\n", section);
+                                }
                         } else {
                                 print_unknown_command();
                         }
