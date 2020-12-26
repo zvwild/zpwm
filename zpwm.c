@@ -108,30 +108,28 @@ int main(int argc, const char *argv[])
 
                         if (current == '\0') {
                                 break;
-                        } else if ((((multi_word && current == '"') || (!multi_word && current == ' ') || current == '\n')) && start != NULL) {
-                                if (current_ptr != command_line && previous != ' ') {
-                                        char *end = current_ptr;
+                        } else if (current_ptr != command_line && previous != ' ' && (((multi_word && current == '"') || (!multi_word && current == ' ') || current == '\n')) && start != NULL) {
+                                char *end = current_ptr;
 
-                                        size_t buffer_len = end - start;
-                                        char *text = (char*)malloc(buffer_len + 1);
-                                        memcpy(text, start, buffer_len);
-                                        text[buffer_len] = '\0';
+                                size_t buffer_len = end - start;
+                                char *text = (char*)malloc(buffer_len + 1);
+                                memcpy(text, start, buffer_len);
+                                text[buffer_len] = '\0';
 
-                                        struct string_node *new_node = string_node_new(text, buffer_len);
+                                struct string_node *new_node = string_node_new(text, buffer_len);
 
-                                        if (list_start == NULL) {
-                                                list_start = new_node;
-                                        } else {
-                                                struct string_node *last = list_start;
-                                                while (last->next)
-                                                        last = last->next;
+                                if (list_start == NULL) {
+                                        list_start = new_node;
+                                } else {
+                                        struct string_node *last = list_start;
+                                        while (last->next)
+                                                last = last->next;
 
-                                                last->next = new_node;
-                                        }
-
-                                        list_len += 1;
-                                        start = NULL;
+                                        last->next = new_node;
                                 }
+
+                                list_len += 1;
+                                start = NULL;
                         } else if (current == '"') {
                                 multi_word = true;
                         } else if (current != ' ' && start == NULL) {
