@@ -116,7 +116,7 @@ int main(int argc, const char *argv[])
                 if (list_start != NULL) {
                         char *cmd = list_start->value;
                         if (strcmp("help", cmd) == 0) {
-                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get name\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard");
+                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get name\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n");
                         } else if (strcmp("get", cmd) == 0) {
                                 if (list_len == 1) {
                                         fprintf(stderr, "Please provide a section. Example: get github\n");
