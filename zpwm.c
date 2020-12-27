@@ -122,7 +122,7 @@ command_loop:
                                 char *text = (char*)malloc(buffer_len + 1);
 
                                 if (!text) {
-                                        fprintf(stderr, "Could not %zu bytes for argument buffer. Aborting current command\n", buffer_len);
+                                        fprintf(stderr, "Failed to allocate %zu bytes for argument buffer. Aborting current command.\n", buffer_len);
                                         if (list_start != NULL)
                                                 string_node_free_self_and_following(list_start);
                                         goto command_loop;
@@ -134,7 +134,7 @@ command_loop:
                                 struct string_node *new_node = string_node_new(text, buffer_len);
 
                                 if (!new_node) {
-                                        fprintf(stderr, "Could not allocate argument list node for %s. Aborting current command\n", text);
+                                        fprintf(stderr, "Failed to allocate argument list node for %s. Aborting current command.\n", text);
                                         free(text);
                                         if (list_start != NULL)
                                                 string_node_free_self_and_following(list_start);
@@ -180,9 +180,9 @@ command_loop:
 
                                         if (!zip_file) {
                                                 if (zip_error_code == 27)
-                                                        fprintf(stderr, "Wrong password!\n");
+                                                        fprintf(stderr, "Wrong password. Aborting...\n");
                                                 else
-                                                        fprintf(stderr, "Section not found!\n");
+                                                        fprintf(stderr, "Section not found. Aborting...\n");
                                         } else {
                                                 zip_stat_t stat;
                                                 zip_stat_index(archive, zip_name_locate(archive, section, ZIP_FL_ENC_GUESS), ZIP_FL_ENC_GUESS, &stat);
@@ -191,7 +191,7 @@ command_loop:
                                                 char *file_buffer = (char*)malloc(file_buffer_size + 1);
 
                                                 if (!file_buffer) {
-                                                        fprintf(stderr, "Could not allocate %zu bytes for file buffer. Abortung current command.\n", file_buffer_size);
+                                                        fprintf(stderr, "Failed to allocate %zu bytes for file buffer. Aborting...\n", file_buffer_size);
 
                                                         zip_fclose(zip_file);
                                                         string_node_free_self_and_following(list_start);
@@ -202,7 +202,7 @@ command_loop:
                                                 zip_int64_t bytes_read = zip_fread(zip_file, file_buffer, file_buffer_size);
 
                                                 if (bytes_read == -1) {
-                                                        fprintf(stderr, "Could not read section %s\n", section);
+                                                        fprintf(stderr, "Failed to read section %s. Aborting...\n", section);
 
                                                         free(file_buffer);
                                                         zip_fclose(zip_file);
@@ -232,7 +232,7 @@ command_loop:
                                         char *entries_buffer = (char*)malloc(current_len);
 
                                         if (!entries_buffer) {
-                                                fprintf(stderr, "Could not allocate %zu bytes for entries buffer. Aborting current command.\n", current_len);
+                                                fprintf(stderr, "Failed to allocate %zu bytes for entries buffer. Aborting...\n", current_len);
                                                 string_node_free_self_and_following(list_start);
                                                 goto command_loop;
                                         }
@@ -246,7 +246,7 @@ command_loop:
                                                 char *new_block = (char*) realloc(entries_buffer, new_len);
 
                                                 if (!new_block) {
-                                                        fprintf(stderr, "Failed to reallocate entries buffer (%zu bytes). Aborting.\n", new_len);
+                                                        fprintf(stderr, "Failed to reallocate entries buffer (%zu bytes). Aborting...\n", new_len);
 
                                                         free(entries_buffer);
                                                         string_node_free_self_and_following(list_start);
@@ -268,7 +268,7 @@ command_loop:
                                         zip_source_t *src = zip_source_buffer(archive, entries_buffer, current_len, 0);
 
                                         if (!src) {
-                                                fprintf(stderr, "Failed to create source for the new section. Aborting current command.\n");
+                                                fprintf(stderr, "Failed to create source for the new section. Aborting...\n");
 
                                                 free(entries_buffer);
                                                 string_node_free_self_and_following(list_start);
@@ -279,7 +279,7 @@ command_loop:
                                         zip_int64_t index = zip_file_add(archive, section, src, ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
 
                                         if (index == -1) {
-                                                fprintf(stderr, "Failed to add new section!\n");
+                                                fprintf(stderr, "Failed to add new section! Aborting...\n");
 
                                                 zip_source_free(src);
                                                 string_node_free_self_and_following(list_start);
@@ -290,7 +290,7 @@ command_loop:
                                         zip_int64_t encryption_result = zip_file_set_encryption(archive, index, ZIP_EM_AES_256, password);
 
                                         if (encryption_result == -1)
-                                                fprintf(stderr, "WARNING: Failed to encrypt section %s\n", section);
+                                                fprintf(stderr, "WARNING: Failed to encrypt section %s!\n", section);
                                         else
                                                 fprintf(stderr, "Section %s updated.\n", section);
                                 }
