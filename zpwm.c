@@ -91,6 +91,8 @@ prompt_password:
         }
 
         size_t commad_line_size = MAX_COMMAND_LENGTH;
+
+command_loop:
         while (true) {
                 fprintf(stderr, "> ");
                 char command_line[MAX_COMMAND_LENGTH];
@@ -118,6 +120,14 @@ prompt_password:
 
                                 size_t buffer_len = end - start;
                                 char *text = (char*)malloc(buffer_len + 1);
+
+                                if (!text) {
+                                        fprintf(stderr, "Could not %zu bytes for argument buffer. Aborting current command\n", buffer_len);
+                                        if (list_start != NULL)
+                                                string_node_free_self_and_following(list_start);
+                                        goto command_loop;
+                                }
+
                                 memcpy(text, start, buffer_len);
                                 text[buffer_len] = '\0';
 
