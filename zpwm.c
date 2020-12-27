@@ -166,7 +166,7 @@ command_loop:
                 if (list_start != NULL) {
                         char *cmd = list_start->value;
                         if (strcmp("help", cmd) == 0) {
-                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get name\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n");
+                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get section\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n");
                         } else if (strcmp("get", cmd) == 0) {
                                 if (list_len == 1) {
                                         fprintf(stderr, "Please provide a section. Example: get github\n");
@@ -182,7 +182,7 @@ command_loop:
                                                 if (zip_error_code == 27)
                                                         fprintf(stderr, "Wrong password!\n");
                                                 else
-                                                        fprintf(stderr, "Could not open file!\n");
+                                                        fprintf(stderr, "Section not found!\n");
                                         } else {
                                                 zip_stat_t stat;
                                                 zip_stat_index(archive, zip_name_locate(archive, section, ZIP_FL_ENC_GUESS), ZIP_FL_ENC_GUESS, &stat);
