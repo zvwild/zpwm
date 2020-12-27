@@ -133,6 +133,14 @@ command_loop:
 
                                 struct string_node *new_node = string_node_new(text, buffer_len);
 
+                                if (!new_node) {
+                                        fprintf(stderr, "Could not allocate argument list node for %s. Aborting current command\n", text);
+                                        free(text);
+                                        if (list_start != NULL)
+                                                string_node_free_self_and_following(list_start);
+                                        goto command_loop;
+                                }
+
                                 if (list_start == NULL) {
                                         list_start = new_node;
                                 } else {
@@ -274,6 +282,10 @@ void string_node_free_self_and_following(struct string_node *node)
 struct string_node *string_node_new(char *value, size_t len)
 {
         struct string_node *result = (struct string_node*)malloc(sizeof(*result));
+
+        if (!result)
+                return NULL;
+
         result->value = value;
         result->len = len;
         result->next = NULL;
