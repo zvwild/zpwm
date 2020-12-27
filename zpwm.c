@@ -199,7 +199,18 @@ command_loop:
                                                         goto command_loop;
                                                 }
 
-                                                zip_fread(zip_file, file_buffer, file_buffer_size);
+                                                zip_int64_t bytes_read = zip_fread(zip_file, file_buffer, file_buffer_size);
+
+                                                if (bytes_read == -1) {
+                                                        fprintf(stderr, "Could not read section %s\n", section);
+
+                                                        free(file_buffer);
+                                                        zip_fclose(zip_file);
+                                                        string_node_free_self_and_following(list_start);
+
+                                                        goto command_loop;
+                                                }
+
                                                 file_buffer[file_buffer_size] = '\0';
 
                                                 fprintf(stderr, "Section %s:\n\t%s\n", section, file_buffer);
