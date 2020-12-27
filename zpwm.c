@@ -309,7 +309,9 @@ command_loop:
                 }
         }
 
-        zip_close(archive);
+        zip_int64_t close_result = zip_close(archive);
+        if (close_result == -1)
+                fprintf(stderr, "Failed to persist changes\n");
 
 cleanup_password:
         /* clear the password buffer */
