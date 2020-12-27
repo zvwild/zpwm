@@ -277,9 +277,22 @@ command_loop:
                                         }
 
                                         zip_int64_t index = zip_file_add(archive, section, src, ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
-                                        zip_file_set_encryption(archive, index, ZIP_EM_AES_256, password);
 
-                                        fprintf(stderr, "Section %s updated.\n", section);
+                                        if (index == -1) {
+                                                fprintf(stderr, "Failed to add new section!\n");
+
+                                                zip_source_free(src);
+                                                string_node_free_self_and_following(list_start);
+
+                                                goto cleanup_password;
+                                        }
+
+                                        zip_int64_t encryption_result = zip_file_set_encryption(archive, index, ZIP_EM_AES_256, password);
+
+                                        if (encryption_result == -1)
+                                                fprintf(stderr, "WARNING: Failed to encrypt section %s\n", section);
+                                        else
+                                                fprintf(stderr, "Section %s updated.\n", section);
                                 }
                         } else if (strcmp("exit", cmd) == 0 || strcmp("quit", cmd) == 0) {
                                 fprintf(stderr, "Bye!\n");
