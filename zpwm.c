@@ -115,7 +115,7 @@ command_loop:
 
                         if (current == '\0') {
                                 break;
-                        } else if (current_ptr != command_line && previous != ' ' && (((multi_word && current == '"') || (!multi_word && current == ' ') || current == '\n')) && start != NULL) {
+                        } else if (current_ptr != command_line && previous != ' ' && (((multi_word && current == '"') || (!multi_word && current == ' ') || current == '\n')) && start) {
                                 char *end = current_ptr;
 
                                 size_t buffer_len = end - start;
@@ -141,7 +141,7 @@ command_loop:
                                         goto command_loop;
                                 }
 
-                                if (list_start == NULL) {
+                                if (!list_start) {
                                         list_start = new_node;
                                 } else {
                                         struct string_node *last = list_start;
@@ -155,7 +155,7 @@ command_loop:
                                 start = NULL;
                         } else if (current == '"') {
                                 multi_word = true;
-                        } else if (current != ' ' && start == NULL) {
+                        } else if (current != ' ' && !start) {
                                 start = current_ptr;
                         }
 
@@ -163,7 +163,7 @@ command_loop:
                         previous = current;
                 }
 
-                if (list_start != NULL) {
+                if (list_start) {
                         char *cmd = list_start->value;
                         if (strcmp("help", cmd) == 0) {
                                 fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get section\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n");
@@ -178,7 +178,7 @@ command_loop:
 
                                         int zip_error_code = zip_error_code_zip(error);
 
-                                        if (zip_file == NULL) {
+                                        if (!zip_file) {
                                                 if (zip_error_code == 27)
                                                         fprintf(stderr, "Wrong password!\n");
                                                 else
