@@ -230,15 +230,35 @@ command_loop:
 
                                         size_t current_len = entry_node->len;
                                         char *entries_buffer = (char*)malloc(current_len);
+
+                                        if (!entries_buffer) {
+                                                fprintf(stderr, "Could not allocate %zu bytes for entries buffer. Aborting current command.\n", current_len);
+                                                string_node_free_self_and_following(list_start);
+                                                goto command_loop;
+                                        }
+
                                         memcpy(entries_buffer, entry_node->value, current_len);
 
                                         entry_node = entry_node->next;
                                         while (entry_node) {
-                                                entries_buffer = realloc(entries_buffer, current_len + entry_node->len + 1);
+                                                size_t new_len = current_len + entry_node->len + 1;
+
+                                                char *new_block = (char*) realloc(entries_buffer, new_len);
+
+                                                if (!new_block) {
+                                                        fprintf(stderr, "Failed to reallocate entries buffer (%zu bytes). Aborting.\n", new_len);
+
+                                                        free(entries_buffer);
+                                                        string_node_free_self_and_following(list_start);
+
+                                                        goto command_loop;
+                                                }
+
+                                                entries_buffer = new_block;
                                                 entries_buffer[current_len] = ' ';
                                                 memcpy(entries_buffer + current_len + 1, entry_node->value, entry_node->len);
 
-                                                current_len += entry_node->len + 1;
+                                                current_len = new_len;
                                                 entry_node = entry_node->next;
                                         }
 
