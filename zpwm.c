@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <zip.h>
 
@@ -65,6 +66,27 @@ prompt_password:
                 goto cleanup_password;
         case ZIP_ER_NOZIP:
                 fprintf(stderr, "Input file is not a zip!\n");
+                goto cleanup_password;
+        case ZIP_ER_OPEN:
+                fprintf(stderr, "Input file could not be opened!\n");
+                goto cleanup_password;
+        case ZIP_ER_READ:
+                fprintf(stderr, "A read error occured: %s\n", strerror(errno));
+                goto cleanup_password;
+        case ZIP_ER_INVAL:
+                fprintf(stderr, "Invalid path!\n");
+                goto cleanup_password;
+        case ZIP_ER_INCONS:
+                fprintf(stderr, "Consistency error!\n");
+                goto cleanup_password;
+        case ZIP_ER_SEEK:
+                fprintf(stderr, "Input file does not allow seeks!\n");
+                goto cleanup_password;
+        case ZIP_ER_NOENT:
+                fprintf(stderr, "Input file does not exist\n");
+                goto cleanup_password;
+        case ZIP_ER_EXISTS:
+                fprintf(stderr, "Input file already exist\n!");
                 goto cleanup_password;
         }
 
