@@ -266,6 +266,16 @@ command_loop:
                                         entries_buffer[current_len] = '\0';
 
                                         zip_source_t *src = zip_source_buffer(archive, entries_buffer, current_len, 0);
+
+                                        if (!src) {
+                                                fprintf(stderr, "Failed to create source for the new section. Aborting current command.\n");
+
+                                                free(entries_buffer);
+                                                string_node_free_self_and_following(list_start);
+
+                                                goto command_loop;
+                                        }
+
                                         zip_int64_t index = zip_file_add(archive, section, src, ZIP_FL_OVERWRITE | ZIP_FL_ENC_UTF_8);
                                         zip_file_set_encryption(archive, index, ZIP_EM_AES_256, password);
 
