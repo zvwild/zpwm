@@ -189,6 +189,16 @@ command_loop:
 
                                                 size_t file_buffer_size = stat.size;
                                                 char *file_buffer = (char*)malloc(file_buffer_size + 1);
+
+                                                if (!file_buffer) {
+                                                        fprintf(stderr, "Could not allocate %zu bytes for file buffer. Abortung current command.\n", file_buffer_size);
+
+                                                        zip_fclose(zip_file);
+                                                        string_node_free_self_and_following(list_start);
+
+                                                        goto command_loop;
+                                                }
+
                                                 zip_fread(zip_file, file_buffer, file_buffer_size);
                                                 file_buffer[file_buffer_size] = '\0';
 
