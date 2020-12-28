@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <termios.h>
 
 #include <zip.h>
 
@@ -38,6 +39,13 @@ int main(int argc, const char *argv[])
         size_t password_buffer_size;
         char *password;
 
+        struct termios original;
+        tcgetattr(STDIN_FILENO, &original);
+
+        struct termios no_echoing = original;
+        no_echoing.c_lflag &= ~ECHO;
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &no_echoing);
+
 prompt_password:
         password_buffer_size = MAX_PASSWORD_LENGTH + 1;
         password = (char*)malloc(password_buffer_size);
@@ -51,11 +59,16 @@ prompt_password:
         size_t characters_read = getline(&password, &password_buffer_size, stdin);
         password[characters_read - 1] = 0;
 
+        fprintf(stderr, "\n");
+
         if (password[0] == '\0') {
                 fprintf(stderr, "Please provide a valid password!\n");
                 free(password);
                 goto prompt_password;
         }
+
+
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &original);
 
         int zip_error;
         zip_t *archive = zip_open(file_name, ZIP_CREATE, &zip_error);
