@@ -166,7 +166,7 @@ command_loop:
                 if (list_start) {
                         char *cmd = list_start->value;
                         if (strcmp("help", cmd) == 0) {
-                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get section\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n");
+                                fprintf(stderr, "Avaiable commands:\n\t- help\n\t- get section\n\t- set service entry1 entry2 entry3\n\t- exit (quit)\n\t- discard\n\t- list\n");
                         } else if (strcmp("get", cmd) == 0) {
                                 if (list_len == 1) {
                                         fprintf(stderr, "Please provide a section. Example: get github\n");
