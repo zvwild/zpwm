@@ -300,6 +300,18 @@ command_loop:
                         } else if (strcmp("discard", cmd) == 0) {
                                 zip_unchange_all(archive);
                                 fprintf(stderr, "Discarded changes!\n");
+                        } else if (strcmp("list", cmd) == 0) {
+                                zip_int64_t num_entries = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
+                                for (zip_int64_t i = 0; i < num_entries; i++) {
+                                        const char *name = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
+
+                                        if (!name) {
+                                                fprintf(stderr, "Failed to allocate memory for the name\n");
+                                                continue;
+                                        }
+
+                                        fprintf(stderr, "%s\n", name);
+                                }
                         } else {
                                 print_unknown_command();
                         }
