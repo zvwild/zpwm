@@ -1,0 +1,7 @@
+-O3
+-s
+-Wall
+-Wextra
+-pedantic
+-std=c11
+-lzip
