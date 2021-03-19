@@ -4,7 +4,7 @@ A password manager operating on zip files.
 ## Getting started
 To get started, build the program from source, the only dependency required is [libzip](https://libzip.org/).
 
-> Arch Linux users can install libzip directly using the [libzip](https://archlinux.org/packages/extra/x86_64/libzip/) package avaialbe in the offical repositories.
+> Arch Linux as well as Void Linux users can install libzip directly using the [libzip](https://archlinux.org/packages/extra/x86_64/libzip/) package available in the offical repositories.
 
 Having libzip installed, simply run `make` to produce a binary.
 
